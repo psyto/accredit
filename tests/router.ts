@@ -8,8 +8,8 @@ import {
   findComplianceConfigPda,
 } from '../packages/sdk/src/pda';
 
-const TRANSFER_HOOK_PROGRAM_ID = new PublicKey('4CoN4C1mqdkgvgQeXMSa1Pnb7guFH89DekEvRHgKmivf');
-const REGISTRY_PROGRAM_ID = new PublicKey('hhcx645NBLLRrKry3dkDMTMzZfrCUEJk3UurUYBxjww');
+const TRANSFER_HOOK_PROGRAM_ID = new PublicKey('5DLH2UrDD5bJFadn1gV1rof6sJ7MzJbVNnUfVMtGJgSL');
+const REGISTRY_PROGRAM_ID = new PublicKey('66tKcQqpv8GH2igWWBcLVrTjvo8cgpVJJAE8xadAgnYA');
 
 describe('@accredit/sdk PDA helpers', () => {
   it('derives KYC registry PDA', () => {

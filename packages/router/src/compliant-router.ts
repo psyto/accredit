@@ -13,10 +13,10 @@ import {
 } from './types';
 
 const DEFAULT_REGISTRY_PROGRAM_ID = new PublicKey(
-  'hhcx645NBLLRrKry3dkDMTMzZfrCUEJk3UurUYBxjww'
+  '66tKcQqpv8GH2igWWBcLVrTjvo8cgpVJJAE8xadAgnYA'
 );
 const DEFAULT_TRANSFER_HOOK_PROGRAM_ID = new PublicKey(
-  '4CoN4C1mqdkgvgQeXMSa1Pnb7guFH89DekEvRHgKmivf'
+  '5DLH2UrDD5bJFadn1gV1rof6sJ7MzJbVNnUfVMtGJgSL'
 );
 
 /**

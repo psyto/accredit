@@ -69,10 +69,10 @@ In your `Anchor.toml`, add the transfer-hook program if you need to invoke it vi
 
 ```toml
 [programs.localnet]
-transfer_hook = "4CoN4C1mqdkgvgQeXMSa1Pnb7guFH89DekEvRHgKmivf"
+transfer_hook = "5DLH2UrDD5bJFadn1gV1rof6sJ7MzJbVNnUfVMtGJgSL"
 
 [programs.devnet]
-transfer_hook = "4CoN4C1mqdkgvgQeXMSa1Pnb7guFH89DekEvRHgKmivf"
+transfer_hook = "5DLH2UrDD5bJFadn1gV1rof6sJ7MzJbVNnUfVMtGJgSL"
 ```
 
 ## TypeScript Integration
@@ -143,7 +143,7 @@ import { Connection, PublicKey } from '@solana/web3.js';
 import { KycClient, KycLevel } from '@accredit/sdk';
 
 const connection = new Connection(rpcUrl);
-const hookProgram = new PublicKey('4CoN4C1mqdkgvgQeXMSa1Pnb7guFH89DekEvRHgKmivf');
+const hookProgram = new PublicKey('5DLH2UrDD5bJFadn1gV1rof6sJ7MzJbVNnUfVMtGJgSL');
 
 const kycClient = new KycClient(connection, hookProgram);
 
@@ -218,7 +218,7 @@ After setup, every `transfer_checked` on the mint will automatically invoke the 
 
 | Program | ID |
 |---------|-----|
-| Transfer Hook | `4CoN4C1mqdkgvgQeXMSa1Pnb7guFH89DekEvRHgKmivf` |
-| Compliant Registry | `hhcx645NBLLRrKry3dkDMTMzZfrCUEJk3UurUYBxjww` |
+| Transfer Hook | `5DLH2UrDD5bJFadn1gV1rof6sJ7MzJbVNnUfVMtGJgSL` |
+| Compliant Registry | `66tKcQqpv8GH2igWWBcLVrTjvo8cgpVJJAE8xadAgnYA` |
 
 These are the same on localnet and devnet. Mainnet program IDs will be published when deployed.

@@ -1,6 +1,6 @@
 # Compliant Registry Program
 
-**Program ID:** `hhcx645NBLLRrKry3dkDMTMzZfrCUEJk3UurUYBxjww`
+**Program ID:** `66tKcQqpv8GH2igWWBcLVrTjvo8cgpVJJAE8xadAgnYA`
 
 On-chain registry of audited DEX liquidity pools. The compliance router uses this registry to ensure trade routes only pass through pools that meet regulatory requirements. Each pool entry tracks its audit status, jurisdiction, and required KYC level.
 

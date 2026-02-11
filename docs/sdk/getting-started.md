@@ -106,8 +106,8 @@ import {
 } from '@accredit/sdk';
 import { PublicKey } from '@solana/web3.js';
 
-const TRANSFER_HOOK_PROGRAM = new PublicKey('4CoN4C1mqdkgvgQeXMSa1Pnb7guFH89DekEvRHgKmivf');
-const REGISTRY_PROGRAM = new PublicKey('hhcx645NBLLRrKry3dkDMTMzZfrCUEJk3UurUYBxjww');
+const TRANSFER_HOOK_PROGRAM = new PublicKey('5DLH2UrDD5bJFadn1gV1rof6sJ7MzJbVNnUfVMtGJgSL');
+const REGISTRY_PROGRAM = new PublicKey('66tKcQqpv8GH2igWWBcLVrTjvo8cgpVJJAE8xadAgnYA');
 
 // Core layer PDAs
 const [registryPda, registryBump] = findKycRegistryPda(mint, TRANSFER_HOOK_PROGRAM);

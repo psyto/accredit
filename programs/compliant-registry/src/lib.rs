@@ -6,7 +6,7 @@ pub mod state;
 use errors::ComplianceError;
 use state::*;
 
-declare_id!("hhcx645NBLLRrKry3dkDMTMzZfrCUEJk3UurUYBxjww");
+declare_id!("66tKcQqpv8GH2igWWBcLVrTjvo8cgpVJJAE8xadAgnYA");
 
 #[program]
 pub mod compliant_registry {

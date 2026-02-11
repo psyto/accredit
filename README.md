@@ -53,7 +53,7 @@ accredit/
 
 ## Programs
 
-### Transfer Hook (`4CoN4C1mqdkgvgQeXMSa1Pnb7guFH89DekEvRHgKmivf`)
+### Transfer Hook (`5DLH2UrDD5bJFadn1gV1rof6sJ7MzJbVNnUfVMtGJgSL`)
 
 Token-2022 transfer hook that validates every token transfer against KYC/AML requirements:
 
@@ -66,7 +66,7 @@ Token-2022 transfer hook that validates every token transfer against KYC/AML req
 
 See [docs/programs/transfer-hook.md](docs/programs/transfer-hook.md) for full reference.
 
-### Compliant Registry (`hhcx645NBLLRrKry3dkDMTMzZfrCUEJk3UurUYBxjww`)
+### Compliant Registry (`66tKcQqpv8GH2igWWBcLVrTjvo8cgpVJJAE8xadAgnYA`)
 
 On-chain registry of audited DEX pools for compliant route verification:
 

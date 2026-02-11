@@ -18,7 +18,7 @@ import { Connection, PublicKey, Keypair, SystemProgram } from '@solana/web3.js';
 // Old Continuum transfer-hook program ID
 const OLD_PROGRAM_ID = new PublicKey('8YuthNBWfjKJxS8Z43sJQB12iNvwcE57GrLKo1d1NPCa');
 // New unified transfer-hook program ID
-const NEW_PROGRAM_ID = new PublicKey('4CoN4C1mqdkgvgQeXMSa1Pnb7guFH89DekEvRHgKmivf');
+const NEW_PROGRAM_ID = new PublicKey('5DLH2UrDD5bJFadn1gV1rof6sJ7MzJbVNnUfVMtGJgSL');
 
 const OLD_WHITELIST_SEED = Buffer.from('whitelist');
 const OLD_KYC_REGISTRY_SEED = Buffer.from('kyc_registry');

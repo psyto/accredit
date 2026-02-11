@@ -19,7 +19,7 @@ use spl_tlv_account_resolution::{
 pub mod state;
 use state::*;
 
-declare_id!("4CoN4C1mqdkgvgQeXMSa1Pnb7guFH89DekEvRHgKmivf");
+declare_id!("5DLH2UrDD5bJFadn1gV1rof6sJ7MzJbVNnUfVMtGJgSL");
 
 #[error_code]
 pub enum TransferHookError {
