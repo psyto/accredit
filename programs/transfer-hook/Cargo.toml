@@ -1,0 +1,26 @@
+[package]
+name = "transfer-hook"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+description = "Unified Transfer Hook for KYC/AML Compliance"
+
+[lib]
+crate-type = ["cdylib", "lib"]
+name = "transfer_hook"
+
+[features]
+default = []
+cpi = ["no-entrypoint"]
+no-entrypoint = []
+no-idl = []
+no-log-ix-name = []
+idl-build = ["anchor-lang/idl-build", "anchor-spl/idl-build"]
+
+[dependencies]
+anchor-lang = { workspace = true }
+anchor-spl = { workspace = true }
+spl-transfer-hook-interface = { workspace = true }
+spl-tlv-account-resolution = "0.8.1"
+spl-discriminator = "0.3.0"
+accredit-types = { workspace = true }
