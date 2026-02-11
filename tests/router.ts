@@ -15,14 +15,14 @@ describe('@accredit/sdk PDA helpers', () => {
   it('derives KYC registry PDA', () => {
     const mint = Keypair.generate().publicKey;
     const [pda, bump] = findKycRegistryPda(mint, TRANSFER_HOOK_PROGRAM_ID);
-    expect(pda).to.be.instanceOf(PublicKey);
+    expect(pda.toBase58()).to.be.a('string');
     expect(bump).to.be.a('number');
   });
 
   it('derives whitelist entry PDA (unified: wallet only)', () => {
     const wallet = Keypair.generate().publicKey;
     const [pda, bump] = findWhitelistEntryPda(wallet, TRANSFER_HOOK_PROGRAM_ID);
-    expect(pda).to.be.instanceOf(PublicKey);
+    expect(pda.toBase58()).to.be.a('string');
     expect(bump).to.be.a('number');
 
     // Same wallet always produces same PDA
@@ -33,7 +33,7 @@ describe('@accredit/sdk PDA helpers', () => {
   it('derives pool registry PDA', () => {
     const authority = Keypair.generate().publicKey;
     const [pda, bump] = findPoolRegistryPda(authority, REGISTRY_PROGRAM_ID);
-    expect(pda).to.be.instanceOf(PublicKey);
+    expect(pda.toBase58()).to.be.a('string');
     expect(bump).to.be.a('number');
   });
 
@@ -41,14 +41,14 @@ describe('@accredit/sdk PDA helpers', () => {
     const registry = Keypair.generate().publicKey;
     const ammKey = Keypair.generate().publicKey;
     const [pda, bump] = findPoolEntryPda(registry, ammKey, REGISTRY_PROGRAM_ID);
-    expect(pda).to.be.instanceOf(PublicKey);
+    expect(pda.toBase58()).to.be.a('string');
     expect(bump).to.be.a('number');
   });
 
   it('derives compliance config PDA', () => {
     const authority = Keypair.generate().publicKey;
     const [pda, bump] = findComplianceConfigPda(authority, REGISTRY_PROGRAM_ID);
-    expect(pda).to.be.instanceOf(PublicKey);
+    expect(pda.toBase58()).to.be.a('string');
     expect(bump).to.be.a('number');
   });
 });
