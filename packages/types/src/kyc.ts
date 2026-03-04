@@ -69,3 +69,15 @@ export function isJurisdictionInBitmask(
 export function isJurisdictionAllowed(jurisdiction: Jurisdiction): boolean {
   return jurisdiction !== Jurisdiction.Usa;
 }
+
+/** Blacklist entry for a sanctioned/blocked wallet (SSS-2 compliance) */
+export interface BlacklistEntry {
+  wallet: PublicKey;
+  registry: PublicKey;
+  reason: string;
+  isActive: boolean;
+  addedBy: PublicKey;
+  addedAt: bigint;
+  removedAt: bigint;
+  bump: number;
+}

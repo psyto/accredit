@@ -53,6 +53,18 @@ pub enum TransferHookError {
     #[msg("Invalid whitelist entry")]
     InvalidWhitelistEntry,
 
+    #[msg("Sender is blacklisted")]
+    SenderBlacklisted,
+
+    #[msg("Recipient is blacklisted")]
+    RecipientBlacklisted,
+
+    #[msg("Blacklist entry already exists")]
+    AlreadyBlacklisted,
+
+    #[msg("Blacklist entry not active")]
+    NotBlacklisted,
+
     #[msg("Arithmetic overflow")]
     Overflow,
 }
@@ -169,6 +181,57 @@ pub mod transfer_hook {
         Ok(())
     }
 
+    /// Add wallet to blacklist (SSS-2 compliance)
+    pub fn add_to_blacklist(
+        ctx: Context<AddToBlacklist>,
+        params: AddToBlacklistParams,
+    ) -> Result<()> {
+        let clock = Clock::get()?;
+        let registry = &mut ctx.accounts.registry;
+        let entry = &mut ctx.accounts.blacklist_entry;
+
+        entry.wallet = params.wallet;
+        entry.registry = registry.key();
+        entry.reason = params.reason;
+        entry.is_active = true;
+        entry.added_by = ctx.accounts.authority.key();
+        entry.added_at = clock.unix_timestamp;
+        entry.removed_at = 0;
+        entry.bump = ctx.bumps.blacklist_entry;
+
+        registry.updated_at = clock.unix_timestamp;
+
+        emit!(WalletBlacklisted {
+            wallet: params.wallet,
+            reason: entry.reason.clone(),
+            added_by: ctx.accounts.authority.key(),
+            timestamp: clock.unix_timestamp,
+        });
+
+        Ok(())
+    }
+
+    /// Remove wallet from blacklist
+    pub fn remove_from_blacklist(ctx: Context<RemoveFromBlacklist>) -> Result<()> {
+        let clock = Clock::get()?;
+        let registry = &mut ctx.accounts.registry;
+        let entry = &mut ctx.accounts.blacklist_entry;
+
+        require!(entry.is_active, TransferHookError::NotBlacklisted);
+
+        entry.is_active = false;
+        entry.removed_at = clock.unix_timestamp;
+        registry.updated_at = clock.unix_timestamp;
+
+        emit!(WalletUnblacklisted {
+            wallet: entry.wallet,
+            removed_by: ctx.accounts.authority.key(),
+            timestamp: clock.unix_timestamp,
+        });
+
+        Ok(())
+    }
+
     /// Initialize extra account metas for transfer hook resolution
     pub fn initialize_extra_account_meta_list(
         ctx: Context<InitializeExtraAccountMetaList>,
@@ -207,6 +270,28 @@ pub mod transfer_hook {
                 false,
                 false,
             )?,
+            // Sender blacklist entry (SSS-2)
+            ExtraAccountMeta::new_with_seeds(
+                &[
+                    Seed::Literal {
+                        bytes: BlacklistEntry::SEED_PREFIX.to_vec(),
+                    },
+                    Seed::AccountKey { index: 0 }, // source (sender token account)
+                ],
+                false,
+                false,
+            )?,
+            // Recipient blacklist entry (SSS-2)
+            ExtraAccountMeta::new_with_seeds(
+                &[
+                    Seed::Literal {
+                        bytes: BlacklistEntry::SEED_PREFIX.to_vec(),
+                    },
+                    Seed::AccountKey { index: 2 }, // destination (recipient token account)
+                ],
+                false,
+                false,
+            )?,
         ];
 
         let account_size = ExtraAccountMetaList::size_of(account_metas.len())?;
@@ -239,16 +324,39 @@ pub mod transfer_hook {
 
     /// Execute transfer hook - validates KYC/AML compliance
     /// Called automatically by Token-2022 on every transfer
+    ///
+    /// Validation order:
+    /// 1. Registry active check
+    /// 2. Blacklist check (SSS-2) — reject if either party is blacklisted
+    /// 3. Whitelist check — verify KYC status, jurisdiction, limits
     pub fn execute(ctx: Context<Execute>, amount: u64) -> Result<()> {
         let clock = Clock::get()?;
 
-        // Validate registry is active
+        // 1. Validate registry is active
         require!(
             ctx.accounts.registry.is_active(),
             TransferHookError::RegistryInactive
         );
 
-        // Validate sender
+        // 2. Check blacklist (SSS-2 compliance) — checked before whitelist
+        //    If blacklist PDAs exist and are active, reject the transfer.
+        //    For SSS-1 tokens these accounts won't be initialized, so we
+        //    check the remaining_accounts slice that the extra-account-metas
+        //    resolver populates.
+        if let Some(sender_bl) = &ctx.accounts.sender_blacklist {
+            require!(
+                !sender_bl.is_blacklisted(),
+                TransferHookError::SenderBlacklisted
+            );
+        }
+        if let Some(recipient_bl) = &ctx.accounts.recipient_blacklist {
+            require!(
+                !recipient_bl.is_blacklisted(),
+                TransferHookError::RecipientBlacklisted
+            );
+        }
+
+        // 3. Validate sender whitelist
         let sender_entry = &ctx.accounts.sender_whitelist;
         require!(
             sender_entry.is_valid(clock.unix_timestamp),
@@ -270,7 +378,7 @@ pub mod transfer_hook {
             TransferHookError::TransferExceedsLimit
         );
 
-        // Validate recipient
+        // Validate recipient whitelist
         let recipient_entry = &ctx.accounts.recipient_whitelist;
         require!(
             recipient_entry.is_valid(clock.unix_timestamp),
@@ -487,6 +595,62 @@ pub struct UpdateWhitelist<'info> {
     pub whitelist_entry: Account<'info, WhitelistEntry>,
 }
 
+#[derive(AnchorSerialize, AnchorDeserialize)]
+pub struct AddToBlacklistParams {
+    pub wallet: Pubkey,
+    pub reason: String,
+}
+
+#[derive(Accounts)]
+#[instruction(params: AddToBlacklistParams)]
+pub struct AddToBlacklist<'info> {
+    #[account(
+        mut,
+        constraint = authority.key() == registry.authority @ TransferHookError::Unauthorized
+    )]
+    pub authority: Signer<'info>,
+
+    #[account(
+        mut,
+        seeds = [KycRegistry::SEED_PREFIX, registry.mint.as_ref()],
+        bump = registry.bump,
+    )]
+    pub registry: Account<'info, KycRegistry>,
+
+    #[account(
+        init,
+        payer = authority,
+        space = 8 + BlacklistEntry::INIT_SPACE,
+        seeds = [BlacklistEntry::SEED_PREFIX, params.wallet.as_ref()],
+        bump
+    )]
+    pub blacklist_entry: Account<'info, BlacklistEntry>,
+
+    pub system_program: Program<'info, System>,
+}
+
+#[derive(Accounts)]
+pub struct RemoveFromBlacklist<'info> {
+    #[account(
+        constraint = authority.key() == registry.authority @ TransferHookError::Unauthorized
+    )]
+    pub authority: Signer<'info>,
+
+    #[account(
+        mut,
+        seeds = [KycRegistry::SEED_PREFIX, registry.mint.as_ref()],
+        bump = registry.bump,
+    )]
+    pub registry: Account<'info, KycRegistry>,
+
+    #[account(
+        mut,
+        seeds = [BlacklistEntry::SEED_PREFIX, blacklist_entry.wallet.as_ref()],
+        bump = blacklist_entry.bump,
+    )]
+    pub blacklist_entry: Account<'info, BlacklistEntry>,
+}
+
 #[derive(Accounts)]
 pub struct InitializeExtraAccountMetaList<'info> {
     #[account(mut)]
@@ -538,6 +702,21 @@ pub struct Execute<'info> {
         bump = recipient_whitelist.bump,
     )]
     pub recipient_whitelist: Account<'info, WhitelistEntry>,
+
+    /// Sender blacklist entry (optional — only exists if wallet was blacklisted)
+    /// For SSS-1 tokens this PDA won't exist and will be None.
+    #[account(
+        seeds = [BlacklistEntry::SEED_PREFIX, source.key().as_ref()],
+        bump,
+    )]
+    pub sender_blacklist: Option<Account<'info, BlacklistEntry>>,
+
+    /// Recipient blacklist entry (optional — only exists if wallet was blacklisted)
+    #[account(
+        seeds = [BlacklistEntry::SEED_PREFIX, destination.key().as_ref()],
+        bump,
+    )]
+    pub recipient_blacklist: Option<Account<'info, BlacklistEntry>>,
 }
 
 #[derive(Accounts)]
@@ -620,5 +799,20 @@ pub struct RegistryAuthorityUpdated {
     pub mint: Pubkey,
     pub old_authority: Pubkey,
     pub new_authority: Pubkey,
+    pub timestamp: i64,
+}
+
+#[event]
+pub struct WalletBlacklisted {
+    pub wallet: Pubkey,
+    pub reason: String,
+    pub added_by: Pubkey,
+    pub timestamp: i64,
+}
+
+#[event]
+pub struct WalletUnblacklisted {
+    pub wallet: Pubkey,
+    pub removed_by: Pubkey,
     pub timestamp: i64,
 }

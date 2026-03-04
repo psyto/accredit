@@ -2,6 +2,7 @@
 pub use accredit_types::{
     KycLevel, Jurisdiction,
     WHITELIST_SEED_PREFIX, KYC_REGISTRY_SEED_PREFIX, SECONDS_PER_DAY,
+    BLACKLIST_SEED_PREFIX, MAX_REASON_LEN,
     trade_limit_for_level, jurisdiction_allowed, is_jurisdiction_in_bitmask,
 };
 
@@ -131,6 +132,48 @@ impl KycRegistry {
     pub const SEED_PREFIX: &'static [u8] = KYC_REGISTRY_SEED_PREFIX;
 
     pub fn is_active(&self) -> bool {
+        self.is_active
+    }
+}
+
+/// Blacklist entry for a sanctioned/blocked wallet (SSS-2 compliance)
+///
+/// When a BlacklistEntry exists and is_active == true, the transfer hook
+/// will reject any transfer involving this wallet as sender or recipient.
+#[account]
+#[derive(InitSpace)]
+pub struct BlacklistEntry {
+    /// Blocked wallet address
+    pub wallet: Pubkey,
+
+    /// Associated KYC registry
+    pub registry: Pubkey,
+
+    /// Reason for blacklisting (e.g. "OFAC match", "Sanctions screening")
+    #[max_len(64)]
+    pub reason: String,
+
+    /// Is entry currently active (blocking transfers)
+    pub is_active: bool,
+
+    /// Authority that added this entry
+    pub added_by: Pubkey,
+
+    /// Timestamp when blacklisted
+    pub added_at: i64,
+
+    /// Timestamp when removed (0 if still active)
+    pub removed_at: i64,
+
+    /// Bump seed
+    pub bump: u8,
+}
+
+impl BlacklistEntry {
+    pub const SEED_PREFIX: &'static [u8] = BLACKLIST_SEED_PREFIX;
+
+    /// Check if wallet is currently blacklisted
+    pub fn is_blacklisted(&self) -> bool {
         self.is_active
     }
 }

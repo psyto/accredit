@@ -2,6 +2,7 @@
 export {
   findKycRegistryPda,
   findWhitelistEntryPda,
+  findBlacklistEntryPda,
   findExtraAccountMetaListPda,
   findPoolRegistryPda,
   findPoolEntryPda,
@@ -11,12 +12,14 @@ export {
 
 // Clients
 export { KycClient } from './kyc-client';
+export { BlacklistClient } from './blacklist-client';
 export { RegistryClient } from './registry-client';
 
 // Re-export types for convenience
 export type {
   WhitelistEntry,
   KycRegistry,
+  BlacklistEntry,
   PoolComplianceEntry,
 } from '@accredit/types';
 export {

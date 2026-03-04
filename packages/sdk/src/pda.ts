@@ -4,6 +4,7 @@ import { PublicKey } from '@solana/web3.js';
 const SEEDS = {
   kycRegistry: Buffer.from('kyc_registry'),
   whitelist: Buffer.from('whitelist'),
+  blacklist: Buffer.from('blacklist'),
   extraAccountMetas: Buffer.from('extra-account-metas'),
   poolRegistry: Buffer.from('pool_registry'),
   poolEntry: Buffer.from('pool_entry'),
@@ -43,6 +44,17 @@ export function findExtraAccountMetaListPda(
 ): [PublicKey, number] {
   return PublicKey.findProgramAddressSync(
     [SEEDS.extraAccountMetas, mint.toBuffer()],
+    programId
+  );
+}
+
+/** Derive PDA for BlacklistEntry account (SSS-2 compliance) */
+export function findBlacklistEntryPda(
+  wallet: PublicKey,
+  programId: PublicKey
+): [PublicKey, number] {
+  return PublicKey.findProgramAddressSync(
+    [SEEDS.blacklist, wallet.toBuffer()],
     programId
   );
 }
