@@ -2290,6 +2290,14 @@ dependencies = [
 ]
 
 [[package]]
+name = "sovereign"
+version = "0.1.0"
+dependencies = [
+ "anchor-lang",
+ "solana-program",
+]
+
+[[package]]
 name = "spl-associated-token-account"
 version = "7.0.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"

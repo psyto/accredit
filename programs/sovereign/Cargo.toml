@@ -1,0 +1,21 @@
+[package]
+name = "sovereign"
+version.workspace = true
+edition = "2021"
+description = "Universal identity and multi-dimensional reputation protocol"
+
+[lib]
+crate-type = ["cdylib", "lib"]
+name = "sovereign"
+
+[features]
+no-entrypoint = []
+no-idl = []
+no-log-ix-name = []
+cpi = ["no-entrypoint"]
+default = []
+idl-build = ["anchor-lang/idl-build"]
+
+[dependencies]
+anchor-lang = { workspace = true, features = ["init-if-needed"] }
+solana-program.workspace = true
