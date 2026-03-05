@@ -1,0 +1,156 @@
+{
+  "name": "Fabrknt On-Chain",
+  "slug": "fabrknt-onchain",
+  "description": "On-chain compliance infrastructure for Solana. KYC/AML whitelist reads, identity reputation scores, trust assessment, route compliance, and ZK proof inputs.",
+  "version": "0.1.0",
+  "author": "Fabrknt",
+  "chains": ["solana"],
+  "networks": {
+    "solana": ["mainnet-beta", "devnet"]
+  },
+  "plans": [
+    {
+      "id": "starter",
+      "name": "Starter",
+      "price": 0,
+      "description": "Route compliance checking, ZK input preparation, pool whitelist management, and stateless trust assessment.",
+      "rate_limit": "100 requests/min",
+      "features": [
+        "Route compliance checking",
+        "Pool whitelist management",
+        "ZK witness input preparation",
+        "ZK constraint verification",
+        "Trust assessment (stateless)",
+        "Trust comparison and profiling",
+        "Trust threshold checks"
+      ]
+    },
+    {
+      "id": "pro",
+      "name": "Pro",
+      "price": 49,
+      "description": "Full KYC reads, identity reads, batch compliance checks via provisioned Solana RPC, plus all Starter features.",
+      "rate_limit": "100 requests/min",
+      "features": [
+        "On-chain KYC entry reads",
+        "Single wallet compliance checks",
+        "Batch compliance checks (up to 100 wallets)",
+        "On-chain identity reads (SOVEREIGN)",
+        "Batch identity reads (up to 100 wallets)",
+        "Per-dimension identity scores",
+        "Route compliance checking",
+        "Pool whitelist management",
+        "ZK witness input preparation",
+        "ZK constraint verification",
+        "Trust assessment (stateless)",
+        "Trust comparison and profiling",
+        "Trust threshold checks"
+      ]
+    }
+  ],
+  "healthcheck": "/healthcheck",
+  "provisioning": {
+    "provision": "POST /provision",
+    "update": "PUT /update",
+    "deactivate": "DELETE /deactivate",
+    "deprovision": "DELETE /deprovision"
+  },
+  "endpoints": [
+    {
+      "method": "GET",
+      "path": "/v1/kyc/:wallet",
+      "description": "Read whitelist entry for a wallet",
+      "plan": "pro"
+    },
+    {
+      "method": "POST",
+      "path": "/v1/kyc/check",
+      "description": "Check single wallet compliance",
+      "plan": "pro"
+    },
+    {
+      "method": "POST",
+      "path": "/v1/kyc/batch",
+      "description": "Batch compliance check (max 100 wallets)",
+      "plan": "pro"
+    },
+    {
+      "method": "GET",
+      "path": "/v1/identity/:wallet",
+      "description": "Read SOVEREIGN identity scores, tier, and confidence for a wallet",
+      "plan": "pro"
+    },
+    {
+      "method": "POST",
+      "path": "/v1/identity/batch",
+      "description": "Batch identity read (max 100 wallets)",
+      "plan": "pro"
+    },
+    {
+      "method": "GET",
+      "path": "/v1/identity/:wallet/dimension/:dimension",
+      "description": "Read a single dimension score for a wallet",
+      "plan": "pro"
+    },
+    {
+      "method": "POST",
+      "path": "/v1/trust/assess",
+      "description": "Stateless trust assessment from SOVEREIGN scores",
+      "plan": "starter"
+    },
+    {
+      "method": "POST",
+      "path": "/v1/trust/compare",
+      "description": "Compare trust profiles of two wallets",
+      "plan": "starter"
+    },
+    {
+      "method": "POST",
+      "path": "/v1/trust/threshold",
+      "description": "Check if scores meet a minimum threshold for a dimension",
+      "plan": "starter"
+    },
+    {
+      "method": "POST",
+      "path": "/v1/trust/profile",
+      "description": "Analyze score profile: strongest, weakest, dimension ranking",
+      "plan": "starter"
+    },
+    {
+      "method": "POST",
+      "path": "/v1/route/check",
+      "description": "Check route plan compliance against pool whitelist",
+      "plan": "starter"
+    },
+    {
+      "method": "POST",
+      "path": "/v1/route/pools",
+      "description": "Batch check pool keys against whitelist",
+      "plan": "starter"
+    },
+    {
+      "method": "POST",
+      "path": "/v1/route/whitelist/add",
+      "description": "Add pool to whitelist",
+      "plan": "starter"
+    },
+    {
+      "method": "DELETE",
+      "path": "/v1/route/whitelist/:ammKey",
+      "description": "Remove pool from whitelist",
+      "plan": "starter"
+    },
+    {
+      "method": "POST",
+      "path": "/v1/zk/prepare",
+      "description": "Generate witness inputs for Noir ZK compliance circuit",
+      "plan": "starter"
+    },
+    {
+      "method": "POST",
+      "path": "/v1/zk/verify-inputs",
+      "description": "Stateless verification of compliance constraint inputs",
+      "plan": "starter"
+    }
+  ]
+}
