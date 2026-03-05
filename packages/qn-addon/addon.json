@@ -1,6 +1,6 @@
 {
-  "name": "Fabrknt On-Chain",
-  "slug": "fabrknt-onchain",
+  "name": "Fabrknt On-Chain Compliance",
+  "slug": "fabrknt-onchain-compliance",
   "description": "On-chain compliance infrastructure for Solana. KYC/AML whitelist reads, identity reputation scores, trust assessment, route compliance, and ZK proof inputs.",
   "version": "0.1.0",
   "author": "Fabrknt",
