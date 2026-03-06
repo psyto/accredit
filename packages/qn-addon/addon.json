@@ -1,12 +1,36 @@
 {
   "name": "Fabrknt On-Chain Compliance",
   "slug": "fabrknt-onchain-compliance",
-  "description": "On-chain compliance infrastructure for Solana. KYC/AML whitelist reads, identity reputation scores, trust assessment, route compliance, and ZK proof inputs.",
+  "description": "Chain-agnostic KYC/AML compliance with on-chain enforcement. Identity reputation scores, trust assessment, route compliance, and ZK proof inputs. Solana transfer hooks + EVM contracts.",
   "version": "0.1.0",
   "author": "Fabrknt",
-  "chains": ["solana"],
+  "category": "compliance",
+  "support": {
+    "email": "support@fabrknt.com",
+    "url": "https://fabrknt.com/support"
+  },
+  "repository": "https://github.com/psyto/accredit",
+  "chains": [
+    {
+      "id": "solana",
+      "name": "Solana"
+    },
+    {
+      "id": "ethereum",
+      "name": "Ethereum"
+    }
+  ],
   "networks": {
-    "solana": ["mainnet-beta", "devnet"]
+    "solana": ["mainnet-beta", "devnet"],
+    "ethereum": ["mainnet", "goerli"]
+  },
+  "healthcheck": "/healthcheck",
+  "authentication": "basic",
+  "provisioning": {
+    "provision": "POST /provision",
+    "update": "PUT /update",
+    "deactivate": "DELETE /deactivate",
+    "deprovision": "DELETE /deprovision"
   },
   "plans": [
     {
@@ -14,7 +38,9 @@
       "name": "Starter",
       "price": 0,
       "description": "Route compliance checking, ZK input preparation, pool whitelist management, and stateless trust assessment.",
-      "rate_limit": "100 requests/min",
+      "rate_limit": {
+        "requests_per_minute": 100
+      },
       "features": [
         "Route compliance checking",
         "Pool whitelist management",
@@ -29,32 +55,22 @@
       "id": "pro",
       "name": "Pro",
       "price": 49,
-      "description": "Full KYC reads, identity reads, batch compliance checks via provisioned Solana RPC, plus all Starter features.",
-      "rate_limit": "100 requests/min",
+      "description": "Full KYC reads, identity reads, batch compliance checks, plus all Starter features.",
+      "rate_limit": {
+        "requests_per_minute": 200
+      },
       "features": [
+        "All Starter features",
         "On-chain KYC entry reads",
         "Single wallet compliance checks",
         "Batch compliance checks (up to 100 wallets)",
         "On-chain identity reads (SOVEREIGN)",
         "Batch identity reads (up to 100 wallets)",
         "Per-dimension identity scores",
-        "Route compliance checking",
-        "Pool whitelist management",
-        "ZK witness input preparation",
-        "ZK constraint verification",
-        "Trust assessment (stateless)",
-        "Trust comparison and profiling",
-        "Trust threshold checks"
+        "Priority support"
       ]
     }
   ],
-  "healthcheck": "/healthcheck",
-  "provisioning": {
-    "provision": "POST /provision",
-    "update": "PUT /update",
-    "deactivate": "DELETE /deactivate",
-    "deprovision": "DELETE /deprovision"
-  },
   "endpoints": [
     {
       "method": "GET",
@@ -77,7 +93,7 @@
     {
       "method": "GET",
       "path": "/v1/identity/:wallet",
-      "description": "Read SOVEREIGN identity scores, tier, and confidence for a wallet",
+      "description": "Read SOVEREIGN identity scores, tier, and confidence",
       "plan": "pro"
     },
     {
@@ -107,13 +123,13 @@
     {
       "method": "POST",
       "path": "/v1/trust/threshold",
-      "description": "Check if scores meet a minimum threshold for a dimension",
+      "description": "Check if scores meet a minimum threshold",
       "plan": "starter"
     },
     {
       "method": "POST",
       "path": "/v1/trust/profile",
-      "description": "Analyze score profile: strongest, weakest, dimension ranking",
+      "description": "Analyze score profile: strongest, weakest, ranking",
       "plan": "starter"
     },
     {
@@ -143,7 +159,7 @@
     {
       "method": "POST",
       "path": "/v1/zk/prepare",
-      "description": "Generate witness inputs for Noir ZK compliance circuit",
+      "description": "Generate witness inputs for ZK compliance circuit",
       "plan": "starter"
     },
     {
